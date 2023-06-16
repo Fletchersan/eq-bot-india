@@ -18,7 +18,7 @@ API_KEY = os.getenv('REVERSE_GEOCODING_API_KEY')
 
 
 class Geocode_API:
-    """API CLASS TO REVERSE GEOCODE A LIST OF LAT LONG DICT OBJECTS"""
+    """API CLASS TO REVERSE GEOCODE A LIST OF long lat DICT OBJECTS"""
     API_KEY_CLAUSE = f"apiKey={API_KEY}"
     REQUEST_URL_ROOT = "https://api.geoapify.com/v1/batch/geocode/reverse"
     MAX_POLL_ATTEMPTS = 5
@@ -26,21 +26,28 @@ class Geocode_API:
         paramter_clause = f"{Geocode_API.API_KEY_CLAUSE}&type=country"
         self.request_url = f"{Geocode_API.REQUEST_URL_ROOT}?{paramter_clause}"
         self.request_body: str = json.dumps(lat_long_list)
+        print("Request Body")
+        print(self.request_body)
+        print(type(self.request_body))
         self.headers: CaseInsensitiveDict = CaseInsensitiveDict({
             'Accept': 'application/json',
             'Content-Type': 'application/json'
         })
-        self.poll_url = self.make_request()
+        self.empty_body = len(lat_long_list)
+        if self.empty_body:
+            self.poll_url = self.make_request()
         
     def make_request(self):
         """Makes geocoding request, returns id"""
         response: requests.Response = requests.post(
             self.request_url,
             headers=self.headers,
-            json=self.request_body,
+            data=self.request_body,
             timeout=100
         )
         response_data = json.loads(response.content)
+        print("reverse geocode response")
+        print(response_data)
         return response_data['url']
     
     def _poll_for_data_till_available(self):
@@ -54,7 +61,7 @@ class Geocode_API:
                 timeout=100
             )
             if response.status_code == 200:
-                response_body: Union[List, Dict] = literal_eval(response.content)
+                response_body: Union[List, Dict] = json.loads(response.content)
                 if isinstance(response_body, list):
                     is_data_ready = True
                     return [
@@ -69,9 +76,12 @@ class Geocode_API:
             if poll_attempt == Geocode_API.MAX_POLL_ATTEMPTS:
                 is_data_ready=True
                 raise GenericError(f"Made maximum attempt to poll {poll_attempt}")
-        def get_country_data(self):
-            """polls for geocoding data till it is available and returns country data"""
+
+    def get_country_data(self):
+        """polls for geocoding data till it is available and returns country data"""
+        if self.empty_body:
             return self._poll_for_data_till_available()
+        raise ValueError("Empty request Body")
 
 # url = f"https://api.geoapify.com/v1/geocode/reverse?lat=51.21709661403662&lon=6.7782883744862374&apiKey={API_KEY}"
 
