@@ -71,7 +71,7 @@ def callback():
     print(f"TOKEN IS:\n{token}")
     st_token = f'"{token}"'
 
-    set_key('./.env', 'TWITTER_OAUTH_TOKEN', st_token)
+    set_key('./.env', 'TOKEN', st_token)
     # doggie_fact = parse_dog_fact()
     # payload = {"text": "Hello World!"}
     # response = post_tweet(payload, token).json()
