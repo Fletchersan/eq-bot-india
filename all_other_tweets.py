@@ -1,6 +1,5 @@
 import json
 import os
-import time
 import traceback
 from ast import literal_eval
 from datetime import datetime
@@ -8,7 +7,7 @@ from datetime import datetime
 from dotenv import load_dotenv, set_key
 
 import main
-from get_earthquake_data import FilterAPIData
+from utils.get_earthquake_data import FilterAPIData
 
 try:
     print(f"INFO: TIME OF RUN -> {datetime.now().strftime('%c')}")
@@ -19,12 +18,12 @@ try:
     twitter = main.make_token()
     client_id = os.environ.get("TWITTER_CLIENT_ID")
     client_secret = os.environ.get("TWITTER_CLIENT_SECRET")
-    token_url = "https://api.twitter.com/2/oauth2/token"
+    TOKEN_URL = "https://api.twitter.com/2/oauth2/token"
     print('getting refresh token')
     refreshed_token = twitter.refresh_token(
         client_id=client_id,
         client_secret=client_secret,
-        token_url=token_url,
+        token_url=TOKEN_URL,
         refresh_token=data["refresh_token"],
     )
     print("obtained refresh token")

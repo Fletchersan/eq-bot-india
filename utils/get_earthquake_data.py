@@ -1,8 +1,12 @@
-from eq_api import QueryEarthquakeData
-from reverse_geocode_api import Geocode_API
 import json
 from datetime import datetime
+
 from dateutil import tz
+
+from apis.eq_api import QueryEarthquakeData
+from apis.reverse_geocode_api import Geocode_API
+
+
 class FilterAPIData:
     """
         filtered_earthquake_data -> [
